@@ -5,6 +5,7 @@ module com.example {
 
     opens com.example to javafx.fxml;
     opens com.example.controllers to javafx.fxml;
+    opens com.example.animalshelter to javafx.base;
 
     exports com.example;
 }
