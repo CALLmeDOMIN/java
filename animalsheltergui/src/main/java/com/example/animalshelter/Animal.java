@@ -15,6 +15,13 @@ public class Animal implements Comparable<Animal> {
         this.price = price;
     }
 
+    public Animal(String name, String species, int age, double price) {
+        this.name = name;
+        this.species = species;
+        this.age = age;
+        this.price = price;
+    }
+
     public String getName() {
         return name;
     }

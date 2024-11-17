@@ -67,6 +67,12 @@ public class MainController {
     @FXML
     private Button signoutButton;
 
+    @FXML
+    private Button addShelterButton;
+
+    @FXML
+    private Button addAnimalButton;
+
     private ShelterManager shelterManager;
     private ObservableList<Animal> animalList;
     private ObservableList<AnimalShelter> shelterList;
@@ -108,6 +114,9 @@ public class MainController {
                 animalList.clear();
             }
         });
+
+        addAnimalButton.setOnAction(event -> addAnimal());
+        addShelterButton.setOnAction(event -> addShelter());
     }
 
     private void initializeTableColumns(Role role) {
@@ -248,6 +257,53 @@ public class MainController {
             dialogStage.setScene(new Scene(root));
             dialogStage.showAndWait();
 
+            refreshTableView("shelter");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addAnimal() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("addAnimalDialog.fxml"));
+            Parent root = loader.load();
+
+            AddAnimalDialogController controller = loader.getController();
+            Stage dialogStage = new Stage();
+            controller.setDialogStage(dialogStage);
+
+            dialogStage.setTitle("Add Animal");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(tableView.getScene().getWindow());
+            dialogStage.setScene(new Scene(root));
+            dialogStage.showAndWait();
+
+            AnimalShelter selectedShelter = shelterTableView.getSelectionModel().getSelectedItem();
+            if (selectedShelter != null) {
+                selectedShelter.addAnimal(controller.getAnimal());
+                refreshTableView("animal");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addShelter() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("addShelterDialog.fxml"));
+            Parent root = loader.load();
+
+            AddShelterDialogController controller = loader.getController();
+            Stage dialogStage = new Stage();
+            controller.setDialogStage(dialogStage);
+
+            dialogStage.setTitle("Add Shelter");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(shelterTableView.getScene().getWindow());
+            dialogStage.setScene(new Scene(root));
+            dialogStage.showAndWait();
+
+            shelterManager.addShelter(controller.getShelter());
             refreshTableView("shelter");
         } catch (IOException e) {
             e.printStackTrace();

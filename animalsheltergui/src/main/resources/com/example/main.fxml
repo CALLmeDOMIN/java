@@ -11,7 +11,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<GridPane alignment="TOP_CENTER" prefHeight="652.0" prefWidth="1020.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.MainController">
+<GridPane alignment="TOP_CENTER" prefHeight="652.0" prefWidth="1020.0" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.MainController">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -56,6 +56,7 @@
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
             </TableView>
+            <Button fx:id="addShelterButton" mnemonicParsing="false" text="+" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" />
          </children>
       </AnchorPane>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="3" GridPane.rowIndex="1">
@@ -73,6 +74,7 @@
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
             </TableView>
+            <Button fx:id="addAnimalButton" mnemonicParsing="false" text="+" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" />
          </children>
       </AnchorPane>
    </children>
