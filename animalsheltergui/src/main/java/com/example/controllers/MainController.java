@@ -13,6 +13,9 @@ import com.example.animalshelter.ShelterManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -20,6 +23,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class MainController {
@@ -39,10 +44,10 @@ public class MainController {
     private TableColumn<Animal, Integer> ageColumn;
 
     @FXML
-    private TableColumn<AnimalShelter, String> actionsColumn;
+    private TableColumn<Animal, Double> priceColumn;
 
     @FXML
-    private TableColumn<Animal, Double> priceColumn;
+    private TableColumn<AnimalShelter, String> actionsColumn;
 
     @FXML
     private TableView<AnimalShelter> shelterTableView;
@@ -63,6 +68,8 @@ public class MainController {
     private Button signoutButton;
 
     private ShelterManager shelterManager;
+    private ObservableList<Animal> animalList;
+    private ObservableList<AnimalShelter> shelterList;
 
     @FXML
     private void logOut() throws IOException {
@@ -85,6 +92,25 @@ public class MainController {
             }
         });
 
+        initializeTableColumns(role);
+        initializeShelterManager();
+
+        shelterList = FXCollections.observableArrayList(shelterManager.shelters.values());
+        animalList = FXCollections.observableArrayList();
+
+        shelterTableView.setItems(shelterList);
+        tableView.setItems(animalList);
+
+        shelterTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                animalList.setAll(newValue.getAnimalList());
+            } else {
+                animalList.clear();
+            }
+        });
+    }
+
+    private void initializeTableColumns(Role role) {
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         speciesColumn.setCellValueFactory(new PropertyValueFactory<>("species"));
         conditionColumn.setCellValueFactory(new PropertyValueFactory<>("condition"));
@@ -95,9 +121,9 @@ public class MainController {
 
         if (role == Role.ADMIN) {
             actionsColumn.setVisible(true);
-            actionsColumn.setCellValueFactory(new PropertyValueFactory<>("actions"));
+            actionsColumn.setCellFactory(getActionsCellFactory("animal"));
             shelterActionsColumn.setVisible(true);
-            shelterActionsColumn.setCellFactory(getActionsCellFactory());
+            shelterActionsColumn.setCellFactory(getActionsCellFactory("shelter"));
             shelterCapacityColumn.setVisible(true);
             shelterCapacityColumn.setCellValueFactory(new PropertyValueFactory<>("maxCapacity"));
         } else {
@@ -105,7 +131,9 @@ public class MainController {
             shelterActionsColumn.setVisible(false);
             shelterCapacityColumn.setVisible(false);
         }
+    }
 
+    public void initializeShelterManager() {
         shelterManager = new ShelterManager();
         AnimalShelter shelter = new AnimalShelter("My Shelter", 10);
         shelter.addAnimal(new Animal("Buddy", "Dog", AnimalCondition.HEALTHY, 3, 150.0));
@@ -119,28 +147,52 @@ public class MainController {
 
         shelterManager.addShelter(shelter);
         shelterManager.addShelter(shelter2);
-
-        ObservableList<AnimalShelter> shelterItems = FXCollections
-                .observableArrayList(shelterManager.shelters.values());
-        shelterTableView.setItems(shelterItems);
-
-        shelterTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                ObservableList<Animal> animalItems = FXCollections.observableArrayList(newValue.getAnimalList());
-                tableView.setItems(animalItems);
-            }
-        });
     }
 
-    private Callback<TableColumn<AnimalShelter, String>, TableCell<AnimalShelter, String>> getActionsCellFactory() {
-        return param -> new TableCell<AnimalShelter, String>() {
-            private final Button deleteButton = new Button("Delete");
+    private void refreshTableView(String type) {
+        if (type.equals("animal")) {
+            AnimalShelter selectedShelter = shelterTableView.getSelectionModel().getSelectedItem();
+            if (selectedShelter != null) {
+                animalList.setAll(selectedShelter.getAnimalList());
+            }
+        } else if (type.equals("shelter")) {
+            shelterList.setAll(shelterManager.shelters.values());
+        }
+    }
+
+    private <T> Callback<TableColumn<T, String>, TableCell<T, String>> getActionsCellFactory(String type) {
+        return param -> new TableCell<T, String>() {
+            private final Button deleteButton = new Button("\uD83D\uDDD1");
+            private final Button editButton = new Button("\u270F");
+
+            {
+                editButton.setOnAction(event -> {
+                    T item = getTableView().getItems().get(getIndex());
+                    if (type.equals("animal")) {
+                        Animal animal = (Animal) item;
+                        editAnimal(animal);
+                    } else if (type.equals("shelter")) {
+                        AnimalShelter shelter = (AnimalShelter) item;
+                        editShelter(shelter);
+                    }
+                });
+            }
 
             {
                 deleteButton.setOnAction(event -> {
-                    AnimalShelter shelter = getTableView().getItems().get(getIndex());
-                    shelterManager.removeShelter(shelter.getShelterName());
-                    getTableView().setItems(FXCollections.observableArrayList(shelterManager.shelters.values()));
+                    T item = getTableView().getItems().get(getIndex());
+                    if (type.equals("animal")) {
+                        Animal animal = (Animal) item;
+                        AnimalShelter selectedShelter = shelterTableView.getSelectionModel().getSelectedItem();
+                        if (selectedShelter != null) {
+                            selectedShelter.removeAnimal(animal);
+                            refreshTableView("animal");
+                        }
+                    } else if (type.equals("shelter")) {
+                        AnimalShelter shelter = (AnimalShelter) item;
+                        shelterManager.removeShelter(shelter.getShelterName());
+                        refreshTableView("shelter");
+                    }
                 });
             }
 
@@ -150,10 +202,55 @@ public class MainController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    HBox hbox = new HBox(deleteButton);
+                    HBox hbox = new HBox(editButton);
+                    hbox.getChildren().add(deleteButton);
                     setGraphic(hbox);
                 }
             }
         };
+    }
+
+    private void editAnimal(Animal animal) {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("editAnimalDialog.fxml"));
+            Parent root = loader.load();
+
+            EditAnimalDialogController controller = loader.getController();
+            Stage dialogStage = new Stage();
+            controller.setDialogStage(dialogStage);
+            controller.setAnimal(animal);
+
+            dialogStage.setTitle("Edit Animal");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(tableView.getScene().getWindow());
+            dialogStage.setScene(new Scene(root));
+            dialogStage.showAndWait();
+
+            refreshTableView("animal");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void editShelter(AnimalShelter shelter) {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("editShelterDialog.fxml"));
+            Parent root = loader.load();
+
+            EditShelterDialogController controller = loader.getController();
+            Stage dialogStage = new Stage();
+            controller.setDialogStage(dialogStage);
+            controller.setShelter(shelter);
+
+            dialogStage.setTitle("Edit Shelter");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(shelterTableView.getScene().getWindow());
+            dialogStage.setScene(new Scene(root));
+            dialogStage.showAndWait();
+
+            refreshTableView("shelter");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

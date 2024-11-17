@@ -17,6 +17,7 @@
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
    </columnConstraints>
    <rowConstraints>
       <RowConstraints maxHeight="231.0" minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES" />
@@ -25,10 +26,10 @@
       <RowConstraints maxHeight="609.0" minHeight="10.0" prefHeight="59.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <AnchorPane GridPane.columnIndex="3">
+      <AnchorPane GridPane.columnIndex="4">
          <children>
             <Button fx:id="signoutButton" layoutX="180.0" layoutY="14.0" mnemonicParsing="false" text="Sign out" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-            <Text fx:id="usernameText" layoutX="48.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text=" " wrappingWidth="120.314453125" AnchorPane.topAnchor="15.0" />
+            <Text fx:id="usernameText" layoutX="12.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text=" " wrappingWidth="120.314453125" AnchorPane.topAnchor="15.0" />
          </children>
          <GridPane.margin>
             <Insets />
@@ -43,7 +44,7 @@
             </Text>
          </children>
       </AnchorPane>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
          <children>
             <TableView fx:id="shelterTableView" layoutX="104.0" layoutY="96.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                <columns>
@@ -57,9 +58,9 @@
             </TableView>
          </children>
       </AnchorPane>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1">
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="3" GridPane.rowIndex="1">
          <children>
-            <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <TableView fx:id="tableView" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                <columns>
                   <TableColumn fx:id="nameColumn" prefWidth="75.0" text="Name" />
                   <TableColumn fx:id="speciesColumn" prefWidth="75.0" text="Species" />

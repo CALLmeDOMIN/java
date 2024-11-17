@@ -20,8 +20,16 @@ public class AnimalShelter {
         return shelterName;
     }
 
+    public String setShelterName(String shelterName) {
+        return this.shelterName = shelterName;
+    }
+
     public int getMaxCapacity() {
         return maxCapacity;
+    }
+
+    public void setMaxCapacity(int maxCapacity) {
+        this.maxCapacity = maxCapacity;
     }
 
     public int getAnimalCount() {
@@ -37,7 +45,7 @@ public class AnimalShelter {
             System.err.println("Shelter is full");
             return;
         }
-    
+
         for (Animal a : animalList) {
             if (a.compareTo(animal) == 0) {
                 System.out.println("Animal already exists");
@@ -92,11 +100,11 @@ public class AnimalShelter {
 
     public int countByCondition(AnimalCondition condition) {
         int count = 0;
-    
+
         for (Animal a : animalList)
             if (a.getCondition() == condition)
                 count++;
-            
+
         return count;
     }
 
