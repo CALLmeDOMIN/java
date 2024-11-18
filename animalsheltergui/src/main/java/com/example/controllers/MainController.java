@@ -23,6 +23,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
@@ -53,6 +54,18 @@ public class MainController {
     private TableColumn<AnimalShelter, String> actionsColumn;
 
     @FXML
+    private Button addAnimalButton;
+
+    @FXML
+    private ComboBox<String> conditionComboBox;
+
+    @FXML
+    private TextField animalSearchInput;
+
+    @FXML
+    private Button animalSearchButton;
+
+    @FXML
     private TableView<AnimalShelter> shelterTableView;
 
     @FXML
@@ -65,19 +78,19 @@ public class MainController {
     private TableColumn<AnimalShelter, String> shelterActionsColumn;
 
     @FXML
+    private Button addShelterButton;
+
+    @FXML
+    private TextField shelterSearchInput;
+
+    @FXML
+    private Button shelterSearchButton;
+
+    @FXML
     private Text usernameText;
 
     @FXML
     private Button signoutButton;
-
-    @FXML
-    private Button addShelterButton;
-
-    @FXML
-    private Button addAnimalButton;
-
-    @FXML
-    private ComboBox<String> conditionComboBox;
 
     private ShelterManager shelterManager;
     private ObservableList<Animal> animalList;
@@ -93,16 +106,6 @@ public class MainController {
         UserSession userSession = UserSession.getInstance();
         String username = userSession.getUsername();
         Role role = userSession.getRole();
-
-        usernameText.setText("Welcome, " + username);
-
-        signoutButton.setOnAction(event -> {
-            try {
-                logOut();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
 
         initializeTableColumns(role);
         initializeShelterManager();
@@ -121,8 +124,19 @@ public class MainController {
             }
         });
 
+        usernameText.setText("Welcome, " + username);
+
+        signoutButton.setOnAction(event -> {
+            try {
+                logOut();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         addAnimalButton.setOnAction(event -> addAnimal());
         addShelterButton.setOnAction(event -> addShelter());
+        shelterSearchButton.setOnAction(event -> searchShelters());
+        animalSearchButton.setOnAction(event -> searchAnimals());
 
         conditionComboBox.setItems(FXCollections.observableArrayList(
                 "All",
@@ -335,6 +349,35 @@ public class MainController {
                 AnimalCondition selectedCondition = AnimalCondition.valueOf(condition);
                 List<Animal> filteredAnimals = selectedShelter.getAnimalList().stream()
                         .filter(animal -> animal.getCondition() == selectedCondition).collect(Collectors.toList());
+                animalList.setAll(filteredAnimals);
+            }
+        }
+    }
+
+    private void searchShelters() {
+        String searchText = shelterSearchInput.getText().toLowerCase();
+        if (searchText.isEmpty()) {
+            shelterList.setAll(shelterManager.shelters.values());
+        } else {
+            List<AnimalShelter> filteredShelters = shelterManager.shelters.values().stream()
+                    .filter(shelter -> shelter.getShelterName().toLowerCase().contains(searchText))
+                    .collect(Collectors.toList());
+            shelterList.setAll(filteredShelters);
+        }
+    }
+
+    private void searchAnimals() {
+        String searchText = animalSearchInput.getText().toLowerCase();
+        AnimalShelter selectedShelter = shelterTableView.getSelectionModel().getSelectedItem();
+
+        if (selectedShelter != null) {
+            if (searchText.isEmpty()) {
+                animalList.setAll(selectedShelter.getAnimalList());
+            } else {
+                List<Animal> filteredAnimals = selectedShelter.getAnimalList().stream()
+                        .filter(animal -> animal.getName().toLowerCase().contains(searchText)
+                                || animal.getSpecies().toLowerCase().contains(searchText))
+                        .collect(Collectors.toList());
                 animalList.setAll(filteredAnimals);
             }
         }
