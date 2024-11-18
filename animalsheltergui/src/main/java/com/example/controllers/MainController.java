@@ -1,6 +1,8 @@
 package com.example.controllers;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.example.Main;
 import com.example.Role;
@@ -17,6 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -73,6 +76,9 @@ public class MainController {
     @FXML
     private Button addAnimalButton;
 
+    @FXML
+    private ComboBox<String> conditionComboBox;
+
     private ShelterManager shelterManager;
     private ObservableList<Animal> animalList;
     private ObservableList<AnimalShelter> shelterList;
@@ -117,6 +123,16 @@ public class MainController {
 
         addAnimalButton.setOnAction(event -> addAnimal());
         addShelterButton.setOnAction(event -> addShelter());
+
+        conditionComboBox.setItems(FXCollections.observableArrayList(
+                "All",
+                AnimalCondition.HEALTHY.toString(),
+                AnimalCondition.SICK.toString(),
+                AnimalCondition.QUARANTINED.toString(),
+                AnimalCondition.ADOPTED.toString()));
+        conditionComboBox.setValue("All");
+        conditionComboBox.valueProperty()
+                .addListener((observable, oldValue, newValue) -> filterAnimalsByCondition(newValue));
     }
 
     private void initializeTableColumns(Role role) {
@@ -307,6 +323,20 @@ public class MainController {
             refreshTableView("shelter");
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void filterAnimalsByCondition(String condition) {
+        AnimalShelter selectedShelter = shelterTableView.getSelectionModel().getSelectedItem();
+        if (selectedShelter != null) {
+            if (condition.equals("All")) {
+                animalList.setAll(selectedShelter.getAnimalList());
+            } else {
+                AnimalCondition selectedCondition = AnimalCondition.valueOf(condition);
+                List<Animal> filteredAnimals = selectedShelter.getAnimalList().stream()
+                        .filter(animal -> animal.getCondition() == selectedCondition).collect(Collectors.toList());
+                animalList.setAll(filteredAnimals);
+            }
         }
     }
 }
