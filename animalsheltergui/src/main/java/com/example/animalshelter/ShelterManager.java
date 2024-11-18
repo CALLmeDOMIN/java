@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ShelterManager {
     public Map<String, AnimalShelter> shelters;
-    
+
     public ShelterManager() {
         shelters = new HashMap<>();
     }

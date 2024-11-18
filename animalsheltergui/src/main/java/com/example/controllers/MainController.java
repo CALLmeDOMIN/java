@@ -66,6 +66,9 @@ public class MainController {
     private Button animalSearchButton;
 
     @FXML
+    private Button animalSortButton;
+
+    @FXML
     private TableView<AnimalShelter> shelterTableView;
 
     @FXML
@@ -85,6 +88,9 @@ public class MainController {
 
     @FXML
     private Button shelterSearchButton;
+
+    @FXML
+    private Button shelterSortButton;
 
     @FXML
     private Text usernameText;
@@ -137,6 +143,8 @@ public class MainController {
         addShelterButton.setOnAction(event -> addShelter());
         shelterSearchButton.setOnAction(event -> searchShelters());
         animalSearchButton.setOnAction(event -> searchAnimals());
+        shelterSortButton.setOnAction(event -> sortShelters());
+        animalSortButton.setOnAction(event -> sortAnimals());
 
         conditionComboBox.setItems(FXCollections.observableArrayList(
                 "All",
@@ -174,7 +182,7 @@ public class MainController {
 
     public void initializeShelterManager() {
         shelterManager = new ShelterManager();
-        AnimalShelter shelter = new AnimalShelter("My Shelter", 10);
+        AnimalShelter shelter = new AnimalShelter("W My Shelter", 10);
         shelter.addAnimal(new Animal("Buddy", "Dog", AnimalCondition.HEALTHY, 3, 150.0));
         shelter.addAnimal(new Animal("Mittens", "Cat", AnimalCondition.SICK, 2, 100.0));
         shelter.addAnimal(new Animal("Tweety", "Bird", AnimalCondition.HEALTHY, 1, 50.0));
@@ -380,6 +388,18 @@ public class MainController {
                         .collect(Collectors.toList());
                 animalList.setAll(filteredAnimals);
             }
+        }
+    }
+
+    private void sortShelters() {
+        shelterList.sort((shelter1, shelter2) -> shelter1.getShelterName().compareTo(shelter2.getShelterName()));
+    }
+
+    private void sortAnimals() {
+        AnimalShelter selectedShelter = shelterTableView.getSelectionModel().getSelectedItem();
+        if (selectedShelter != null) {
+            List<Animal> sortedAnimals = selectedShelter.sortByName();
+            animalList.setAll(sortedAnimals);
         }
     }
 }
