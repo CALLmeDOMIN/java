@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.example.exceptions.AnimalAlreadyExistsException;
+import com.example.exceptions.AnimalNotFoundException;
+import com.example.exceptions.ShelterFullException;
+
 public class AnimalShelter {
     private String shelterName;
     private List<Animal> animalList;
@@ -40,34 +44,31 @@ public class AnimalShelter {
         return animalList;
     }
 
-    public void addAnimal(Animal animal) {
+    public void addAnimal(Animal animal) throws ShelterFullException, AnimalAlreadyExistsException {
         if (animalList.size() == maxCapacity) {
-            System.err.println("Shelter is full");
-            return;
+            throw new ShelterFullException("Shelter is full");
         }
 
         for (Animal a : animalList) {
             if (a.compareTo(animal) == 0) {
-                System.out.println("Animal already exists");
-                return;
+                throw new AnimalAlreadyExistsException("Animal already exists");
             }
         }
 
         animalList.add(animal);
     }
 
-    public void removeAnimal(Animal animal) {
+    public void removeAnimal(Animal animal) throws AnimalNotFoundException {
         for (Animal a : animalList) {
             if (a.compareTo(animal) == 0) {
                 animalList.remove(a);
                 return;
             }
         }
-
-        System.out.println("Animal not found");
+        throw new AnimalNotFoundException("Animal not found");
     }
 
-    public void getAnimal(Animal animal) {
+    public void getAnimal(Animal animal) throws AnimalNotFoundException {
         for (Animal a : animalList) {
             if (a.compareTo(animal) == 0) {
                 a.setCondition(AnimalCondition.ADOPTED);
@@ -75,27 +76,27 @@ public class AnimalShelter {
                 return;
             }
         }
-        System.out.println("Animal not found");
+        throw new AnimalNotFoundException("Animal not found");
     }
 
-    public void changeCondition(Animal animal, AnimalCondition condition) {
+    public void changeCondition(Animal animal, AnimalCondition condition) throws AnimalNotFoundException {
         for (Animal a : animalList) {
             if (a.compareTo(animal) == 0) {
                 a.setCondition(condition);
                 return;
             }
         }
-        System.out.println("Animal not found");
+        throw new AnimalNotFoundException("Animal not found");
     }
 
-    public void changeAge(Animal animal, int age) {
+    public void changeAge(Animal animal, int age) throws AnimalNotFoundException {
         for (Animal a : animalList) {
             if (a.compareTo(animal) == 0) {
                 a.setAge(age);
                 return;
             }
         }
-        System.out.println("Animal not found");
+        throw new AnimalNotFoundException("Animal not found");
     }
 
     public int countByCondition(AnimalCondition condition) {
@@ -120,7 +121,7 @@ public class AnimalShelter {
         return sortedByPrice;
     }
 
-    public Animal search(String name) {
+    public Animal search(String name) throws AnimalNotFoundException {
         Collections.sort(animalList, Comparator.comparing(Animal::getName));
         Animal searchAnimal = new Animal(name, "", null, 0, 0.0);
         int index = Collections.binarySearch(animalList, searchAnimal, Comparator.comparing(Animal::getName));
@@ -128,8 +129,7 @@ public class AnimalShelter {
         if (index >= 0) {
             return animalList.get(index);
         } else {
-            System.out.println("Animal not found");
-            return null;
+            throw new AnimalNotFoundException("Animal not found");
         }
     }
 
