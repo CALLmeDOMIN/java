@@ -31,4 +31,9 @@ public class UserSession {
     public void setRole(Role role) {
         this.role = role;
     }
+
+    public void clear() {
+        username = null;
+        role = null;
+    }
 }
