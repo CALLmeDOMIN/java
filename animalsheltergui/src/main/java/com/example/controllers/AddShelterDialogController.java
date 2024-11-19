@@ -4,20 +4,43 @@ import com.example.animalshelter.AnimalShelter;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class AddShelterDialogController {
+    private AnimalShelter shelter;
+    private Stage dialogStage;
+
     @FXML
     private TextField nameField;
 
     @FXML
     private TextField maxCapacityField;
 
-    private AnimalShelter shelter;
-    private Stage dialogStage;
+    @FXML
+    private Text errorText;
+
+    @FXML
+    public void initialize() {
+        maxCapacityField.setOnAction(event -> handleSave());
+    }
+
+    @FXML
+    private void handleSave() {
+        if (!isValidInput()) {
+            return;
+        }
+
+        shelter = new AnimalShelter(nameField.getText(), Integer.parseInt(maxCapacityField.getText()));
+        dialogStage.close();
+    }
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
+    }
+
+    public AnimalShelter getShelter() {
+        return shelter;
     }
 
     public int getMaxCapacity() {
@@ -25,20 +48,21 @@ public class AddShelterDialogController {
     }
 
     public boolean isValidInput() {
-        return !nameField.getText().isEmpty() && Integer.parseInt(maxCapacityField.getText()) > 0;
-    }
+        String name = nameField.getText();
+        String maxCapacity = maxCapacityField.getText();
 
-    public AnimalShelter getShelter() {
-        return shelter;
-    }
-
-    @FXML
-    private void handleSave() {
-        try {
-            shelter = new AnimalShelter(nameField.getText(), Integer.parseInt(maxCapacityField.getText()));
-            dialogStage.close();
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid input: " + e.getMessage());
+        if (name == null || name.isEmpty() || maxCapacity == null || maxCapacity.isEmpty()) {
+            errorText.setText("Please fill in all fields");
+            return false;
         }
+
+        try {
+            Integer.parseInt(maxCapacity);
+        } catch (NumberFormatException e) {
+            errorText.setText("Wrong input format");
+            return false;
+        }
+
+        return true;
     }
 }

@@ -137,6 +137,9 @@ public class MainController {
         shelterSortButton.setOnAction(event -> sortShelters());
         animalSortButton.setOnAction(event -> sortAnimals());
 
+        animalSearchInput.setOnAction(event -> animalSearchButton.fire());
+        shelterSearchInput.setOnAction(event -> shelterSearchButton.fire());
+
         conditionComboBox.setItems(FXCollections.observableArrayList(
                 ALL_CONDITIONS,
                 AnimalCondition.HEALTHY.toString(),
@@ -171,24 +174,38 @@ public class MainController {
             shelterActionsColumn.setCellFactory(getActionsCellFactory("shelter", role));
             shelterCapacityColumn.setVisible(true);
             shelterCapacityColumn.setCellValueFactory(new PropertyValueFactory<>("maxCapacity"));
+
+            addAnimalButton.setVisible(true);
+            addShelterButton.setVisible(true);
         } else {
             actionsColumn.setCellFactory(getActionsCellFactory("animal", role));
             shelterActionsColumn.setVisible(false);
             shelterCapacityColumn.setVisible(false);
+
+            addAnimalButton.setVisible(false);
+            addShelterButton.setVisible(false);
         }
     }
 
     public void initializeShelterManager() {
         shelterManager = new ShelterManager();
         AnimalShelter shelter = new AnimalShelter("W My Shelter", 10);
-        shelter.addAnimal(new Animal("Buddy", "Dog", AnimalCondition.HEALTHY, 3, 150.0));
-        shelter.addAnimal(new Animal("Mittens", "Cat", AnimalCondition.SICK, 2, 100.0));
-        shelter.addAnimal(new Animal("Tweety", "Bird", AnimalCondition.HEALTHY, 1, 50.0));
+        try {
+            shelter.addAnimal(new Animal("Fluffy", "Cat", AnimalCondition.HEALTHY, 2, 100.0));
+            shelter.addAnimal(new Animal("Spike", "Dog", AnimalCondition.SICK, 3, 150.0));
+            shelter.addAnimal(new Animal("Polly", "Bird", AnimalCondition.HEALTHY, 1, 50.0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         AnimalShelter shelter2 = new AnimalShelter("Second Shelter", 5);
-        shelter2.addAnimal(new Animal("Rex", "Dog", AnimalCondition.HEALTHY, 5, 200.0));
-        shelter2.addAnimal(new Animal("Whiskers", "Cat", AnimalCondition.SICK, 4, 150.0));
-        shelter2.addAnimal(new Animal("Polly", "Bird", AnimalCondition.HEALTHY, 2, 75.0));
+        try {
+            shelter2.addAnimal(new Animal("Rex", "Dog", AnimalCondition.HEALTHY, 5, 200.0));
+            shelter2.addAnimal(new Animal("Whiskers", "Cat", AnimalCondition.SICK, 4, 150.0));
+            shelter2.addAnimal(new Animal("Polly", "Bird", AnimalCondition.HEALTHY, 2, 75.0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         shelterManager.addShelter(shelter);
         shelterManager.addShelter(shelter2);
@@ -216,7 +233,11 @@ public class MainController {
                         Animal animal = (Animal) item;
                         AnimalShelter selectedShelter = shelterTableView.getSelectionModel().getSelectedItem();
                         if (selectedShelter != null) {
-                            selectedShelter.getAnimal(animal);
+                            try {
+                                selectedShelter.getAnimal(animal);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             refreshTableView("animal");
                         }
                     });
@@ -266,7 +287,11 @@ public class MainController {
             Animal animal = (Animal) item;
             AnimalShelter selectedShelter = shelterTableView.getSelectionModel().getSelectedItem();
             if (selectedShelter != null) {
-                selectedShelter.removeAnimal(animal);
+                try {
+                    selectedShelter.removeAnimal(animal);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 refreshTableView("animal");
             }
         } else if (type.equals("shelter")) {
@@ -335,7 +360,11 @@ public class MainController {
                 if (selectedShelter != null) {
                     Animal newAnimal = addAnimalController.getAnimal();
                     if (newAnimal != null && newAnimal.getName() != null) {
-                        selectedShelter.addAnimal(newAnimal);
+                        try {
+                            selectedShelter.addAnimal(newAnimal);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         refreshTableView("animal");
                     } else {
                         System.err.println("Invalid animal data");

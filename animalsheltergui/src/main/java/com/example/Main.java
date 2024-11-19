@@ -9,9 +9,6 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
-/**
- * JavaFX App
- */
 public class Main extends Application {
     private static Scene scene;
     private int width = 1020;
@@ -34,7 +31,6 @@ public class Main extends Application {
             scene.setRoot(loadFXML(fxml));
         } catch (IOException e) {
             e.printStackTrace();
-            // TODO Error handling
         }
     }
 

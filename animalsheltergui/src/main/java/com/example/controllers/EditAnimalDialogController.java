@@ -7,9 +7,13 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class EditAnimalDialogController {
+    private Animal animal;
+    private Stage dialogStage;
+
     @FXML
     private TextField nameField;
 
@@ -25,8 +29,33 @@ public class EditAnimalDialogController {
     @FXML
     private TextField priceField;
 
-    private Animal animal;
-    private Stage dialogStage;
+    @FXML
+    private Text errorText;
+
+    @FXML
+    public void initialize() {
+        conditionField.setItems(FXCollections.observableArrayList(
+                AnimalCondition.HEALTHY.toString(),
+                AnimalCondition.SICK.toString(),
+                AnimalCondition.QUARANTINED.toString(),
+                AnimalCondition.ADOPTED.toString()));
+
+        priceField.setOnAction(event -> handleSave());
+    }
+
+    @FXML
+    private void handleSave() {
+        if (!isValidInput()) {
+            return;
+        }
+
+        animal.setName(nameField.getText());
+        animal.setSpecies(speciesField.getText());
+        animal.setCondition(AnimalCondition.valueOf(conditionField.getValue()));
+        animal.setAge(Integer.parseInt(ageField.getText()));
+        animal.setPrice(Double.parseDouble(priceField.getText()));
+        dialogStage.close();
+    }
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
@@ -41,26 +70,27 @@ public class EditAnimalDialogController {
         priceField.setText(String.valueOf(animal.getPrice()));
     }
 
-    @FXML
-    public void initialize() {
-        conditionField.setItems(FXCollections.observableArrayList(
-                AnimalCondition.HEALTHY.toString(),
-                AnimalCondition.SICK.toString(),
-                AnimalCondition.QUARANTINED.toString(),
-                AnimalCondition.ADOPTED.toString()));
-    }
+    public boolean isValidInput() {
+        String name = nameField.getText();
+        String species = speciesField.getText();
+        String condition = conditionField.getValue();
+        String age = ageField.getText();
+        String price = priceField.getText();
 
-    @FXML
-    private void handleSave() {
-        try {
-            animal.setName(nameField.getText());
-            animal.setSpecies(speciesField.getText());
-            animal.setCondition(AnimalCondition.valueOf(conditionField.getValue()));
-            animal.setAge(Integer.parseInt(ageField.getText()));
-            animal.setPrice(Double.parseDouble(priceField.getText()));
-            dialogStage.close();
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid input: " + e.getMessage());
+        if (name == null || name.isEmpty() || species == null || species.isEmpty() || condition == null
+                || age == null || age.isEmpty() || price == null || price.isEmpty()) {
+            errorText.setText("Please fill in all fields");
+            return false;
         }
+
+        try {
+            Integer.parseInt(age);
+            Double.parseDouble(price);
+        } catch (NumberFormatException e) {
+            errorText.setText("Wrong input format");
+            return false;
+        }
+
+        return true;
     }
 }

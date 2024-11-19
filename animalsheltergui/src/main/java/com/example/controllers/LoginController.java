@@ -13,7 +13,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
 public class LoginController {
-
     @FXML
     private Button signinButton;
 
@@ -33,6 +32,9 @@ public class LoginController {
 
     @FXML
     void initialize() {
+        usernameField.setOnAction(event -> signinButton.fire());
+        passwordField.setOnAction(event -> signinButton.fire());
+
         signinButton.setOnAction(event -> {
             formValidation();
         });
@@ -61,7 +63,6 @@ public class LoginController {
     }
 
     Role authenticate(String username, String password) {
-        // ! placeholder for actual credentials check
         String adminCreds = "admin:admin";
         String userCreds = "user:user";
         String creds = username + ":" + password;
