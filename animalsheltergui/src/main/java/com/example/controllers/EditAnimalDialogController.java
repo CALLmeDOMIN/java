@@ -1,7 +1,11 @@
 package com.example.controllers;
 
 import com.example.animalshelter.Animal;
+import com.example.animalshelter.AnimalCondition;
+
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -11,6 +15,9 @@ public class EditAnimalDialogController {
 
     @FXML
     private TextField speciesField;
+
+    @FXML
+    private ComboBox<String> conditionField;
 
     @FXML
     private TextField ageField;
@@ -29,8 +36,18 @@ public class EditAnimalDialogController {
         this.animal = animal;
         nameField.setText(animal.getName());
         speciesField.setText(animal.getSpecies());
+        conditionField.setValue(animal.getCondition().toString());
         ageField.setText(String.valueOf(animal.getAge()));
         priceField.setText(String.valueOf(animal.getPrice()));
+    }
+
+    @FXML
+    public void initialize() {
+        conditionField.setItems(FXCollections.observableArrayList(
+                AnimalCondition.HEALTHY.toString(),
+                AnimalCondition.SICK.toString(),
+                AnimalCondition.QUARANTINED.toString(),
+                AnimalCondition.ADOPTED.toString()));
     }
 
     @FXML
@@ -38,6 +55,7 @@ public class EditAnimalDialogController {
         try {
             animal.setName(nameField.getText());
             animal.setSpecies(speciesField.getText());
+            animal.setCondition(AnimalCondition.valueOf(conditionField.getValue()));
             animal.setAge(Integer.parseInt(ageField.getText()));
             animal.setPrice(Double.parseDouble(priceField.getText()));
             dialogStage.close();

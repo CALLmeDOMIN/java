@@ -97,7 +97,7 @@
                         <TableColumn fx:id="conditionColumn" prefWidth="75.0" text="Condition" />
                         <TableColumn fx:id="ageColumn" prefWidth="75.0" text="Age" />
                         <TableColumn fx:id="priceColumn" prefWidth="75.0" text="Price" />
-                        <TableColumn fx:id="actionsColumn" prefWidth="75.0" text="Actions" visible="false" />
+                        <TableColumn fx:id="actionsColumn" prefWidth="75.0" text="Actions" />
                      </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

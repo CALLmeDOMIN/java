@@ -1,8 +1,11 @@
 package com.example.controllers;
 
 import com.example.animalshelter.Animal;
+import com.example.animalshelter.AnimalCondition;
 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -12,6 +15,9 @@ public class AddAnimalDialogController {
 
     @FXML
     private TextField speciesField;
+
+    @FXML
+    private ComboBox<String> conditionField;
 
     @FXML
     private TextField ageField;
@@ -36,10 +42,20 @@ public class AddAnimalDialogController {
     }
 
     @FXML
+    public void initialize() {
+        conditionField.setItems(FXCollections.observableArrayList(
+                AnimalCondition.HEALTHY.toString(),
+                AnimalCondition.SICK.toString(),
+                AnimalCondition.QUARANTINED.toString(),
+                AnimalCondition.ADOPTED.toString()));
+    }
+
+    @FXML
     private void handleSave() {
         try {
-            animal = new Animal(nameField.getText(), speciesField.getText(), Integer.parseInt(ageField.getText()),
-                    Double.parseDouble(priceField.getText()));
+            animal = new Animal(nameField.getText(), speciesField.getText(),
+                    AnimalCondition.valueOf(conditionField.getValue()),
+                    Integer.parseInt(ageField.getText()), Double.parseDouble(priceField.getText()));
             dialogStage.close();
         } catch (NumberFormatException e) {
             System.err.println("Invalid input: " + e.getMessage());
