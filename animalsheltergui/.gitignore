@@ -30,3 +30,6 @@ Thumbs.db
 # Ignore other IDE-specific files
 *.swp
 *~
+
+# Ignore backup files
+backups/

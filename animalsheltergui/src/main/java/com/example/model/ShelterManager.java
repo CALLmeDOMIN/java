@@ -1,4 +1,4 @@
-package com.example.animalshelter;
+package com.example.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ public class ShelterManager {
     }
 
     public void addShelter(AnimalShelter shelter) {
-        shelters.put(shelter.getShelterName(), shelter);
+        shelters.put(shelter.getName(), shelter);
     }
 
     public void removeShelter(String name) {

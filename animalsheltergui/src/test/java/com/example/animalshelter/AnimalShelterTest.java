@@ -5,6 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.example.exceptions.AnimalAlreadyExistsException;
 import com.example.exceptions.AnimalNotFoundException;
 import com.example.exceptions.ShelterFullException;
+import com.example.model.Animal;
+import com.example.model.AnimalCondition;
+import com.example.model.AnimalShelter;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -92,8 +96,8 @@ public class AnimalShelterTest {
         shelter.addAnimal(animal2);
         shelter.addAnimal(animal1);
         List<Animal> sortedList = shelter.sortByPrice();
-        assertEquals(50.0, sortedList.get(0).getPrice());
-        assertEquals(100.0, sortedList.get(1).getPrice());
+        assertEquals(50.0, sortedList.get(0).getWeight());
+        assertEquals(100.0, sortedList.get(1).getWeight());
     }
 
     @Test
@@ -118,25 +122,25 @@ public class AnimalShelterTest {
     }
 
     @Test
-    void testGetMaxCapacity() {
-        assertEquals(shelter.getMaxCapacity(), 2);
+    void testGetCapacity() {
+        assertEquals(shelter.getCapacity(), 2);
     }
 
     @Test
-    void testGetShelterName() {
-        assertEquals(shelter.getShelterName(), "Happy Tails");
+    void testGetName() {
+        assertEquals(shelter.getName(), "Happy Tails");
     }
 
     @Test
     void testSetMaxCapacity() {
-        shelter.setMaxCapacity(3);
-        assertEquals(shelter.getMaxCapacity(), 3);
+        shelter.setCapacity(3);
+        assertEquals(shelter.getCapacity(), 3);
     }
 
     @Test
     void testSetShelterName() {
-        shelter.setShelterName("New Name");
-        assertEquals(shelter.getShelterName(), "New Name");
+        shelter.setName("New Name");
+        assertEquals(shelter.getName(), "New Name");
     }
 
     @Test

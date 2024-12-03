@@ -1,67 +1,91 @@
 package com.example.controllers;
 
-import com.example.animalshelter.AnimalShelter;
+import com.example.model.AnimalShelter;
+import com.example.utils.AlertUtils;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-public class EditShelterDialogController {
-    private AnimalShelter shelter;
-    private Stage dialogStage;
-
+public class EditShelterDialogController implements DialogController {
     @FXML
     private TextField nameField;
-
     @FXML
-    private TextField maxCapacityField;
+    private TextField capacityField;
 
-    @FXML
-    private Text errorText;
+    private Stage dialogStage;
+    private AnimalShelter shelter;
+    private boolean okClicked = false;
 
-    @FXML
-    public void initialize() {
-        maxCapacityField.setOnAction(event -> handleSave());
-    }
-
-    @FXML
-    private void handleSave() {
-        if (!isValidInput()) {
-            return;
-        }
-
-        shelter.setShelterName(nameField.getText());
-        shelter.setMaxCapacity(Integer.parseInt(maxCapacityField.getText()));
-        dialogStage.close();
-    }
-
+    @Override
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
     }
 
     public void setShelter(AnimalShelter shelter) {
         this.shelter = shelter;
-        nameField.setText(shelter.getShelterName());
-        maxCapacityField.setText(String.valueOf(shelter.getMaxCapacity()));
+        nameField.setText(shelter.getName());
+        capacityField.setText(String.valueOf(shelter.getCapacity()));
     }
 
-    private boolean isValidInput() {
-        String name = nameField.getText();
-        String maxCapacity = maxCapacityField.getText();
+    @FXML
+    private void handleOk() {
+        if (isInputValid()) {
+            try {
+                shelter.setName(nameField.getText().trim());
+                shelter.setCapacity(Integer.parseInt(capacityField.getText().trim()));
+                okClicked = true;
+                dialogStage.close();
+            } catch (NumberFormatException e) {
+                AlertUtils.showError("Input Error", "Please enter a valid number for capacity");
+            }
+        }
+    }
 
-        if (name == null || name.isEmpty() || maxCapacity == null || maxCapacity.isEmpty()) {
-            errorText.setText("Please fill in all fields");
-            return false;
+    @FXML
+    private void handleCancel() {
+        dialogStage.close();
+    }
+
+    public boolean isOkClicked() {
+        return okClicked;
+    }
+
+    public AnimalShelter getShelter() {
+        return shelter;
+    }
+
+    private boolean isInputValid() {
+        StringBuilder errorMessage = new StringBuilder();
+
+        if (isNullOrEmpty(nameField.getText())) {
+            errorMessage.append("Name is required!\n");
+        }
+        if (!isValidNumber(capacityField.getText())) {
+            errorMessage.append("Please enter a valid capacity!\n");
         }
 
+        if (errorMessage.length() == 0) {
+            return true;
+        } else {
+            AlertUtils.showError("Validation Error", errorMessage.toString());
+            return false;
+        }
+    }
+
+    private boolean isNullOrEmpty(String text) {
+        return text == null || text.trim().isEmpty();
+    }
+
+    private boolean isValidNumber(String text) {
+        if (isNullOrEmpty(text)) {
+            return false;
+        }
         try {
-            Integer.parseInt(maxCapacity);
+            int value = Integer.parseInt(text);
+            return value > 0;
         } catch (NumberFormatException e) {
-            errorText.setText("Wrong input format");
             return false;
         }
-
-        return true;
     }
 }

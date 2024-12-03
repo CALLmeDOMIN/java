@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<DialogPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.controllers.RatingsDialogController"
+            prefWidth="520" prefHeight="450">
+    
+    <content>
+        <ScrollPane fx:id="scrollPane" fitToWidth="true" style="-fx-background: white;">
+            <VBox fx:id="contentVBox" spacing="10">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+            </VBox>
+        </ScrollPane>
+    </content>
+    
+    <buttonTypes>
+        <ButtonType text="Add Rating" buttonData="LEFT"/>
+        <ButtonType fx:constant="CLOSE"/>
+    </buttonTypes>
+</DialogPane> 

@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.example.model.Animal;
+import com.example.model.AnimalCondition;
+
 public class AnimalTest {
     private Animal animal1;
     private Animal animal2;
@@ -64,28 +67,28 @@ public class AnimalTest {
     }
 
     @Test
-    void testGetPrice() {
-        assertEquals(100.0, animal1.getPrice());
+    void testGetWeight() {
+        assertEquals(100.0, animal1.getWeight());
     }
 
     @Test
     void testSetPrice() {
-        animal1.setPrice(120.0);
-        assertEquals(120.0, animal1.getPrice());
+        animal1.setWeight(120.0);
+        assertEquals(120.0, animal1.getWeight());
     }
 
     @Test
     void testCompareToDifferentNames() {
-        assertTrue(animal1.compareTo(animal2) > 0);
+        assertTrue(((Comparable<Animal>) animal1).compareTo(animal2) > 0);
     }
 
     @Test
     void testCompareToSameNameDifferentSpecies() {
-        assertTrue(animal1.compareTo(animal4) != 0);
+        assertTrue(((Comparable<Animal>) animal1).compareTo(animal4) != 0);
     }
 
     @Test
     void testCompareToSameNameAndSpeciesDifferentAge() {
-        assertTrue(animal1.compareTo(animal3) < 0);
+        assertTrue(((Comparable<Animal>) animal1).compareTo(animal3) < 0);
     }
 }

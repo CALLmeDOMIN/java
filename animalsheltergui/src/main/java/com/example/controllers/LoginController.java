@@ -1,78 +1,73 @@
 package com.example.controllers;
 
-import java.io.IOException;
-
 import com.example.Main;
 import com.example.Role;
 import com.example.UserSession;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class LoginController {
     @FXML
-    private Button signinButton;
-
-    @FXML
     private TextField usernameField;
-
     @FXML
     private PasswordField passwordField;
-
+    @FXML
+    private Button signinButton;
     @FXML
     private Text errorText;
 
     @FXML
-    private void redirect() throws IOException {
-        Main.setRoot("main");
+    private void initialize() {
     }
 
     @FXML
-    void initialize() {
-        usernameField.setOnAction(event -> signinButton.fire());
-        passwordField.setOnAction(event -> signinButton.fire());
-
-        signinButton.setOnAction(event -> {
-            formValidation();
-        });
-    }
-
-    void formValidation() {
+    private void handleLogin() {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        if (username.isEmpty() || password.isEmpty()) {
-            errorText.setText("Please fill in all fields");
-        } else {
-            Role role = authenticate(username, password);
-            if (role != null) {
+        if (isValidCredentials(username, password)) {
+            try {
                 UserSession.getInstance().setUsername(username);
-                UserSession.getInstance().setRole(role);
-                try {
-                    redirect();
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+                if (username.equals("admin")) {
+                    UserSession.getInstance().setRole(Role.ADMIN);
+                } else {
+                    UserSession.getInstance().setRole(Role.USER);
                 }
-            } else {
-                errorText.setText("Invalid credentials");
+
+                FXMLLoader loader = new FXMLLoader(Main.class.getResource("main.fxml"));
+
+                loader.setControllerFactory(param -> {
+                    if (param == MainController.class) {
+                        return new MainController(Main.getShelterService(), Main.getRatingDao());
+                    }
+                    return null;
+                });
+
+                Parent root = loader.load();
+                Stage stage = (Stage) signinButton.getScene().getWindow();
+                Scene scene = new Scene(root, 1020, 640);
+                stage.setScene(scene);
+                stage.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+                errorText.setText("Error loading main view: " + e.getMessage());
             }
+        } else {
+            errorText.setText("Invalid username or password");
         }
     }
 
-    Role authenticate(String username, String password) {
-        String adminCreds = "admin:admin";
-        String userCreds = "user:user";
-        String creds = username + ":" + password;
-
-        if (adminCreds.equals(creds)) {
-            return Role.ADMIN;
-        } else if (userCreds.equals(creds)) {
-            return Role.USER;
-        } else {
-            return null;
-        }
+    private boolean isValidCredentials(String username, String password) {
+        return username != null && !username.trim().isEmpty() &&
+                password != null && !password.trim().isEmpty();
     }
 }

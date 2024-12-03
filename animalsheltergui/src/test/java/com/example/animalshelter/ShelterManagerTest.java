@@ -5,6 +5,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.example.model.Animal;
+import com.example.model.AnimalCondition;
+import com.example.model.AnimalShelter;
+import com.example.model.ShelterManager;
+
 import java.util.List;
 
 public class ShelterManagerTest {

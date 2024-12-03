@@ -1,96 +1,136 @@
 package com.example.controllers;
 
-import com.example.animalshelter.Animal;
-import com.example.animalshelter.AnimalCondition;
+import com.example.model.Animal;
+import com.example.model.AnimalCondition;
+import com.example.utils.AlertUtils;
 
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-public class EditAnimalDialogController {
-    private Animal animal;
-    private Stage dialogStage;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
+public class EditAnimalDialogController implements DialogController {
     @FXML
     private TextField nameField;
-
     @FXML
     private TextField speciesField;
-
     @FXML
-    private ComboBox<String> conditionField;
-
+    private ComboBox<AnimalCondition> conditionComboBox;
     @FXML
     private TextField ageField;
-
     @FXML
-    private TextField priceField;
+    private TextField weightField;
 
-    @FXML
-    private Text errorText;
+    private Stage dialogStage;
+    private Animal animal;
+    private boolean okClicked = false;
 
-    @FXML
-    public void initialize() {
-        conditionField.setItems(FXCollections.observableArrayList(
-                AnimalCondition.HEALTHY.toString(),
-                AnimalCondition.SICK.toString(),
-                AnimalCondition.QUARANTINED.toString(),
-                AnimalCondition.ADOPTED.toString()));
-
-        priceField.setOnAction(event -> handleSave());
-    }
-
-    @FXML
-    private void handleSave() {
-        if (!isValidInput()) {
-            return;
-        }
-
-        animal.setName(nameField.getText());
-        animal.setSpecies(speciesField.getText());
-        animal.setCondition(AnimalCondition.valueOf(conditionField.getValue()));
-        animal.setAge(Integer.parseInt(ageField.getText()));
-        animal.setPrice(Double.parseDouble(priceField.getText()));
-        dialogStage.close();
-    }
-
+    @Override
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
+    }
+
+    @FXML
+    private void initialize() {
+        conditionComboBox.getItems().addAll(
+                Arrays.stream(AnimalCondition.values())
+                        .filter(condition -> condition != AnimalCondition.ADOPTED)
+                        .collect(Collectors.toList()));
     }
 
     public void setAnimal(Animal animal) {
         this.animal = animal;
         nameField.setText(animal.getName());
         speciesField.setText(animal.getSpecies());
-        conditionField.setValue(animal.getCondition().toString());
+        conditionComboBox.setValue(animal.getCondition());
         ageField.setText(String.valueOf(animal.getAge()));
-        priceField.setText(String.valueOf(animal.getPrice()));
+        weightField.setText(String.valueOf(animal.getWeight()));
     }
 
-    public boolean isValidInput() {
-        String name = nameField.getText();
-        String species = speciesField.getText();
-        String condition = conditionField.getValue();
-        String age = ageField.getText();
-        String price = priceField.getText();
+    @FXML
+    private void handleOk() {
+        if (isInputValid()) {
+            try {
+                animal.setName(nameField.getText().trim());
+                animal.setSpecies(speciesField.getText().trim());
+                animal.setCondition(conditionComboBox.getValue());
+                animal.setAge(Integer.parseInt(ageField.getText().trim()));
+                animal.setWeight(Double.parseDouble(weightField.getText().trim()));
+                okClicked = true;
+                dialogStage.close();
+            } catch (NumberFormatException e) {
+                AlertUtils.showError("Input Error", "Please enter valid numbers for age and weight");
+            }
+        }
+    }
 
-        if (name == null || name.isEmpty() || species == null || species.isEmpty() || condition == null
-                || age == null || age.isEmpty() || price == null || price.isEmpty()) {
-            errorText.setText("Please fill in all fields");
-            return false;
+    @FXML
+    private void handleCancel() {
+        dialogStage.close();
+    }
+
+    public boolean isOkClicked() {
+        return okClicked;
+    }
+
+    public Animal getAnimal() {
+        return animal;
+    }
+
+    private boolean isInputValid() {
+        StringBuilder errorMessage = new StringBuilder();
+
+        if (isNullOrEmpty(nameField.getText())) {
+            errorMessage.append("Name is required!\n");
+        }
+        if (isNullOrEmpty(speciesField.getText())) {
+            errorMessage.append("Species is required!\n");
+        }
+        if (conditionComboBox.getValue() == null) {
+            errorMessage.append("Please select a condition!\n");
+        }
+        if (!isValidNumber(ageField.getText())) {
+            errorMessage.append("Please enter a valid age!\n");
+        }
+        if (!isValidDecimalNumber(weightField.getText())) {
+            errorMessage.append("Please enter a valid weight!\n");
         }
 
+        if (errorMessage.length() == 0) {
+            return true;
+        } else {
+            AlertUtils.showError("Validation Error", errorMessage.toString());
+            return false;
+        }
+    }
+
+    private boolean isNullOrEmpty(String text) {
+        return text == null || text.trim().isEmpty();
+    }
+
+    private boolean isValidNumber(String text) {
+        if (isNullOrEmpty(text)) {
+            return false;
+        }
         try {
-            Integer.parseInt(age);
-            Double.parseDouble(price);
+            int value = Integer.parseInt(text);
+            return value > 0;
         } catch (NumberFormatException e) {
-            errorText.setText("Wrong input format");
             return false;
         }
+    }
 
-        return true;
+    private boolean isValidDecimalNumber(String text) {
+        if (isNullOrEmpty(text)) {
+            return false;
+        }
+        try {
+            double value = Double.parseDouble(text);
+            return value > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }
